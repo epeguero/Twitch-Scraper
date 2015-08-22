@@ -41,7 +41,6 @@ sendLogin :: Handle -> String -> String -> IO ()
 sendLogin hdl nick pass = do
         sendCommand hdl ("PASS " ++ pass)
         sendCommand hdl ("NICK " ++ nick)
-        sendCommand hdl "CAP REQ :twitch.tv/membership"
 
 sendJoin :: Handle -> String -> IO ()
 sendJoin hdl chn = sendCommand hdl ("JOIN " ++ chn)
@@ -62,4 +61,6 @@ processPrivMsg hdl msg = putStrLn (username ++ " says: " ++ text)
                 text = tail (last (args msg))
 
 onLogin :: Handle -> IO ()
-onLogin hdl = sendJoin hdl "#lirik"
+onLogin hdl = do 
+        sendCommand hdl "CAP REQ :twitch.tv/membership twitch.tv/commands twitch.tv/tags"
+        sendJoin hdl "#lirik"

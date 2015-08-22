@@ -1,9 +1,9 @@
-module IrcParser( IrcMessage(extPrefix, prefix, command, args), parseMessage ) where
+module IrcParser( IrcMessage(tags, prefix, command, args), parseMessage ) where
 
 import Data.List
 
 data IrcMessage = IrcMessage {
-                        extPrefix :: String,
+                        tags :: String,
                         prefix :: String,
                         command :: String,
                         args :: [String],
@@ -14,23 +14,23 @@ data IrcMessage = IrcMessage {
 parseMessage :: String -> IrcMessage 
 parseMessage [] = error "Emptry message!"
 parseMessage xs =  let initialState = IrcMessage { 
-                        extPrefix = "",
+                        tags = "",
                         prefix = "",
                         command = "",
                         args = [],
                         toParse = words xs
                         } in
-        getArgs . getCommand . getPrefix . getExtPrefix $ initialState
+        getArgs . getCommand . getPrefix . getTags $ initialState
 
 isToParsePrefix :: String -> IrcMessage -> Bool
 isToParsePrefix prefix state
         | null (toParse state) = False
         | otherwise = isPrefixOf prefix (head (toParse state))
 
-getExtPrefix :: IrcMessage -> IrcMessage
-getExtPrefix state
+getTags :: IrcMessage -> IrcMessage
+getTags state
         | isToParsePrefix "@" state = state {
-                                       extPrefix = tail (head (toParse state)),
+                                       tags = tail (head (toParse state)),
                                        toParse = tail (toParse state) }
         | otherwise = state
 
